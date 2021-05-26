@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://kit.fontawesome.com/e9a9760138.js"
+      crossorigin="anonymous"
+    ></script>
+    <title>Admin Portal</title>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Admin Portal</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <button class="btn btn-outline-success" type="submit">
+              Search
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <section class="col-lg-8 mx-auto p-3 py-md-5">
+      <div class="row g-5">
+        <div class="col-md-6">
+          <h2 class="text-center">Add User</h2>
+          <form
+            name="userForm"
+            autocomplete="off"
+            onsubmit="return validateForm()"
+          >
+            <div class="col-12 mb-3">
+              <label for="fname" class="form-label">First Name</label>
+              <input
+                name="fname"
+                type="text"
+                class="form-control"
+                id="fname"
+                placeholder="Enter your First Name"
+                required
+              />
+            </div>
+            <div class="col-12 mb-3">
+              <label for="lname" class="form-label">Last Name</label>
+              <input
+                name="lname"
+                type="text"
+                class="form-control"
+                id="lname"
+                placeholder="Enter your Last Name"
+                required
+              />
+            </div>
+            <div class="col-12 mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                name="email"
+                class="form-control"
+                id="email"
+                placeholder="Enter your Email"
+                required
+              />
+            </div>
+            <div>
+              <input
+                id="addUser"
+                type="submit"
+                value="Add User"
+                class="btn btn-outline-secondary mt-3"
+              />
+              <input
+                id="saveUser"
+                type="submit"
+                value="Update User"
+                class="btn btn-outline-secondary mt-3"
+                style="display: none"
+              />
+            </div>
+          </form>
+        </div>
+
+        <div class="col-md-6">
+          <h2 class="text-center">User List</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">SNo</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+          <div>
+            <input
+              id="clear"
+              type="submit"
+              value="Clear List"
+              class="btn btn-outline-secondary mt-3"
+              onclick="clearList()"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      function validateForm() {
+        var firstName = document.forms["userForm"]["fname"].value;
+        if (firstName == null || firstName == "" || firstName.length < 3) {
+          window.alert("Please enter your first name correctly");
+          firstName.focus();
+          return false;
+        }
+
+        var lastName = document.forms["userForm"]["lname"].value;
+        if (lastName == null || lastName == "" || lastName.length < 3) {
+          window.alert("Please enter your last name correctly");
+          lastName.focus();
+          return false;
+        }
+
+        var emailId = document.forms["userForm"]["email"].value;
+        if (emailId == null || emailId == "") {
+          window.alert("Please enter your emai Id.");
+          emailId.focus();
+          return false;
+        }
+      }
+
+      function UserInfoUpdate() {
+        fname = document.getElementById("fname").value;
+        lname = document.getElementById("lname").value;
+        email = document.getElementById("email").value;
+
+        if (localStorage.getItem("userList") == null) {
+          userArray = [];
+          userArray.push({ first_name: fname, last_name: lname, email: email });
+          localStorage.setItem("userList", JSON.stringify(userArray));
+        } else {
+          userArrayStr = localStorage.getItem("userList");
+          userArray = JSON.parse(userArrayStr);
+          userArray.push({ first_name: fname, last_name: lname, email: email });
+          localStorage.setItem("userList", JSON.stringify(userArray));
+        }
+        update();
+      }
+
+      function update() {
+        if (localStorage.getItem("userList") == null) {
+          userArray = [];
+          localStorage.setItem("userList", JSON.stringify(userArray));
+        } else {
+          userArrayStr = localStorage.getItem("userList");
+          userArray = JSON.parse(userArrayStr);
+        }
+
+        let tbody = document.getElementById("tbody");
+        let str = "";
+        userArray.forEach((element, index) => {
+          str += `
+                    <tr>
+                        <th scope="row">${index + 1}</th>
+                        <td>${element.first_name}</td>
+                        <td>${element.last_name}</td>
+                        <td>${element.email}</td>
+                        <td><button class="btn btn-outline-primary btn-sm" onclick="editUser(${index})"><i class="fas fa-edit"></i></button></td>
+                        <td><button class="btn btn-outline-primary btn-sm" onclick="deleteUser(${index})"><i class="fas fa-trash"></i></button></td>
+                    </tr>
+                    `;
+        });
+        tbody.innerHTML = str;
+      }
+
+      addUser = document.getElementById("addUser");
+      addUser.addEventListener("click", () => {
+        validateForm();
+        UserInfoUpdate();
+      });
+      update();
+
+      function deleteUser(userIndex) {
+        userArrayStr = localStorage.getItem("userList");
+        userArray = JSON.parse(userArrayStr);
+        userArray.splice(userIndex, 1);
+        localStorage.setItem("userList", JSON.stringify(userArray));
+        update();
+      }
+
+      function editUser(userIndex) {
+        addUserBtn = document.getElementById("addUser");
+        saveUserBtn = document.getElementById("saveUser");
+        addUserBtn.style.display = "none";
+        saveUserBtn.style.display = "block";
+
+        userArrayStr = localStorage.getItem("userList");
+        userArray = JSON.parse(userArrayStr);
+        fname.value = userArray[userIndex]["first_name"];
+        lname.value = userArray[userIndex]["last_name"];
+        email.value = userArray[userIndex]["email"];
+
+        saveUserBtn.addEventListener("click", function () {
+          userArrayStr = localStorage.getItem("userList");
+          userArray = JSON.parse(userArrayStr);
+
+          for (keys in userArray[userIndex]) {
+            if (
+              keys == "first_name" ||
+              keys == "last_name" ||
+              keys == "email"
+            ) {
+              userArray[userIndex].first_name = fname.value;
+              userArray[userIndex].last_name = lname.value;
+              userArray[userIndex].email = email.value;
+            }
+          }
+
+          localStorage.setItem("userList", JSON.stringify(userArray));
+
+          validateForm();
+          update();
+        });
+      }
+
+      function clearList() {
+        if (confirm("Do you really want to clear User List ?"))
+          localStorage.clear();
+        update();
+      }
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
